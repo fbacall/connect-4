@@ -8,6 +8,7 @@
   
   <title>Connect 4</title>
 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/styles.css">
   <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -16,9 +17,34 @@
 <div class="container">
   <h1>Connect 4</h1>
 
-  <div id="player">You are spectating</div>
-  <div id="status"></div>
-  <div class="board" id="board"></div>
+  <div class="game-container">
+    <div class="modal" tabindex="-1" role="dialog" id="name-modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Enter your name...</h4>
+          </div>
+          <div class="modal-body">
+            <input type="text" id="name-input" placeholder="Joe Bloggs" class="form-control">
+          </div>
+          <div class="modal-footer">
+            <button id="connect" type="button" class="btn btn-primary">Go</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-container">
+      <div id="player">You are spectating</div>
+      <div id="status"></div>
+      <div class="board" id="board"></div>
+    </div>
+    <div class="chat-container">
+      <div id="chat-status"></div>
+      <div id="chat"></div>
+      <input type="text" id="chat-input" placeholder="Type here to chat..." class="form-control">
+    </div>
+  </div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script> 

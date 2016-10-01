@@ -1,11 +1,12 @@
-var g = require('./game.js');
+var Game = require('./game.js').Game;
+var Room = require('./room.js').Room;
 
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var games = { 1: new g.Game(7,6)};
+var rooms = { debug: new Room(new Game(7,6)) };
 
 app.use(express.static('public'));
 
@@ -14,16 +15,16 @@ app.post('/game', function (req, res) {
     var id;
     do {
         id = Math.random().toString(36).substr(2, 9);
-    } while (typeof games[id] !== 'undefined');
+    } while (typeof rooms[id] !== 'undefined');
 
-    games[id] = new g.Game(7,6);
+    rooms[id] = new Room(new Game(7,6));
     console.log('Created new game', id);
 
     res.redirect('/game/' + id);
 });
 
 app.get('/game/:id', function (req, res) {
-    if (games[req.params.id]) {
+    if (rooms[req.params.id]) {
         res.sendFile(__dirname + '/public/game.html');
     } else {
         res.status(404).send('Invalid game ID');
@@ -36,42 +37,47 @@ http.listen(3000, function(){
 
 io.on('connection', function(socket){
     console.log('a user connected');
-    var gameId = socket.handshake.query.game;
+    var roomId = socket.handshake.query.id;
     var name = socket.handshake.query.name;
-    var game = games[gameId];
-    var player = null;
+    var room = rooms[roomId];
+    var player = { name: name };
+    socket.player = player;
 
-    if (game) {
-        game.sockets.push(socket);
+    if (room) {
+        var game = room.game;
+
+        room.join(socket);
 
         if (game.player1 && game.player2) {
             console.log("Game is full!");
             socket.emit('state', game.getState());
         } else {
-            player = game.addPlayer({ name: name });
-            console.log(player);
+            game.addPlayer(player);
             socket.emit('player-number', player.number);
-            game.broadcast('state', game.getState());
 
             socket.on('place-token', function(column) {
                 if (game.turn === player) {
                     game.placeToken(column);
-                    game.broadcast('state', game.getState());
+                    room.sync();
                 }
             });
         }
+        room.sync();
+
+        socket.on('chat-message', function (msg) {
+            room.chat(player, msg);
+        });
 
     } else {
-        console.log('No Game!');
+        socket.emit('game-closed');
     }
 
     socket.on('disconnect', function(){
         console.log('user disconnected');
-        if (game) {
-            game.sockets.splice(game.sockets.indexOf(socket), 1);
-            if (player) {
-                game.removePlayer(player);
-            }
+        if (room) {
+            room.leave(socket);
+            game.removePlayer(player);
+            room.sync();
         }
     });
 });

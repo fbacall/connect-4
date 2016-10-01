@@ -1,0 +1,44 @@
+function Room (game) {
+    this.sockets = [];
+    this.game = game;
+}
+
+Room.prototype.join = function (socket) {
+    this.sockets.push(socket);
+    this.status(socket.player, 'joined');
+};
+
+Room.prototype.leave = function (player) {
+    var index = this.sockets.indexOf(player.socket);
+
+    if (index !== -1) {
+        this.sockets.splice(index, 1);
+        this.status(player, 'left');
+    }
+};
+
+Room.prototype.chat = function (player, msg) {
+    this.broadcast('chat-message', { player: player.name, message: escapeHtml(msg) });
+};
+
+Room.prototype.status = function (player, msg) {
+    this.broadcast('chat-status', { player: player.name, message: msg });
+};
+
+Room.prototype.sync = function () {
+    var state = this.game.getState();
+    state.connected = this.sockets.length;
+    this.broadcast('state', state);
+};
+
+Room.prototype.broadcast = function (key, data) {
+    this.sockets.forEach(function (socket) {
+        socket.emit(key, data);
+    });
+};
+
+function escapeHtml(unsafe) {
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+exports.Room = Room;

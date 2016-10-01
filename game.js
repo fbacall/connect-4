@@ -6,7 +6,6 @@ function Game (columns, rows, player1, player2) {
     this.turn = player1;
     this.winner = null;
     this.state = 'waiting';
-    this.sockets = [];
 
     this.board = new Array(columns);
     for (var i = 0; i < columns; i++) {
@@ -31,14 +30,18 @@ Game.prototype.addPlayer = function (player) {
         this.start();
     }
 
-    return player;
+    return true;
 };
 
 Game.prototype.removePlayer = function (player) {
     if (this.player1 === player) {
         this.player1 = null;
+        return true;
     } else if (this.player2 === player) {
         this.player2 = null;
+        return true;
+    } else {
+        return false;
     }
 };
 
@@ -135,16 +138,10 @@ Game.prototype.getState = function () {
       winning: this.winning,
       winner: this.winner,
       turn: this.turn,
-      board: this.board,
-      player1: this.player1,
-      player2: this.player2
+      board: this.board
+      //player1: this.player1.name,
+      //player2: this.player2.name
   };
-};
-
-Game.prototype.broadcast = function (key, data) {
-    this.sockets.forEach(function (socket) {
-        socket.emit(key, data);
-    });
 };
 
 exports.Game = Game;
