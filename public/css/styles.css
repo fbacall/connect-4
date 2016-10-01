@@ -2,6 +2,7 @@
 
 body {
     text-align: center;
+    font-family: sans-serif;
 }
 
 
@@ -55,11 +56,11 @@ body {
     font-weight: bold;
 }
 
-#status.player-1 {
+#player.player-1, #status.player-1 {
     color: #e81216;
 }
 
-#status.player-2 {
+#player.player-2, #status.player-2 {
     color: #ffcf2f;
 }
 
