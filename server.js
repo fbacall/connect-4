@@ -1,5 +1,5 @@
-var Game = require('./game.js').Game;
-var Room = require('./room.js').Room;
+var Game = require('./game.js');
+var Room = require('./room.js');
 
 var express = require('express');
 var app = express();
@@ -20,6 +20,7 @@ app.post('/game', function (req, res) {
 
     rooms[id] = new Room(id, new Game(7,6));
     console.log('Created new room:', id);
+    sweepRoom(rooms[id], 10 * 60 * 1000);
 
     res.redirect('/game/' + id);
 });
@@ -40,10 +41,18 @@ http.listen(3000, function(){
     console.log('listening on *:3000');
 });
 
+function sweepRoom(room, timer) {
+    console.log('Starting delete timer for room:', room.id);
+    room.sweeper = setTimeout(function () {
+        console.log('Deleting empty room:', room.id);
+        delete rooms[room.id];
+    }, timer);
+}
+
 io.on('connection', function(socket){
-    console.log('a user connected');
     var roomId = socket.handshake.query.id;
     var name = socket.handshake.query.name;
+    console.log((name || 'anonymous user') + ' connected');
     var room = rooms[roomId];
     var player = { name: name };
     socket.player = player;
@@ -76,6 +85,7 @@ io.on('connection', function(socket){
 
         room.join(socket);
         if (room.sweeper) {
+            console.log('Cancelling delete timer for room:', room.id);
             clearTimeout(room.sweeper);
             delete room.sweeper;
         }
@@ -90,16 +100,13 @@ io.on('connection', function(socket){
     }
 
     socket.on('disconnect', function(){
-        console.log('user disconnected');
+        console.log((name || 'anonymous user') + ' disconnected');
         if (room) {
             room.leave(socket);
             game.removePlayer(player);
             room.sync();
             if (room.sockets.length == 0) {
-                room.sweeper = setTimeout(function () {
-                    console.log('Deleting empty room:', room.id);
-                    delete rooms[room.id];
-                }, 10 * 60 * 1000);
+                sweepRoom(room, 10 * 60 * 1000);
             }
         }
     });

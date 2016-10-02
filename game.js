@@ -144,4 +144,4 @@ Game.prototype.getState = function () {
   };
 };
 
-exports.Game = Game;
+module.exports = Game;
