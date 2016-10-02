@@ -6,7 +6,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var rooms = { debug: new Room(new Game(7,6)) };
+var rooms = { debug: new Room('debug', new Game(7,6)) };
 var results = [];
 
 app.use(express.static('public'));
@@ -18,8 +18,8 @@ app.post('/game', function (req, res) {
         id = Math.random().toString(36).substr(2, 9);
     } while (typeof rooms[id] !== 'undefined');
 
-    rooms[id] = new Room(new Game(7,6));
-    console.log('Created new game', id);
+    rooms[id] = new Room(id, new Game(7,6));
+    console.log('Created new room:', id);
 
     res.redirect('/game/' + id);
 });
@@ -75,6 +75,10 @@ io.on('connection', function(socket){
         }
 
         room.join(socket);
+        if (room.sweeper) {
+            clearTimeout(room.sweeper);
+            delete room.sweeper;
+        }
         room.sync();
 
         socket.on('chat-message', function (msg) {
@@ -91,6 +95,12 @@ io.on('connection', function(socket){
             room.leave(socket);
             game.removePlayer(player);
             room.sync();
+            if (room.sockets.length == 0) {
+                room.sweeper = setTimeout(function () {
+                    console.log('Deleting empty room:', room.id);
+                    delete rooms[room.id];
+                }, 10 * 60 * 1000);
+            }
         }
     });
 });

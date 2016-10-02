@@ -1,6 +1,7 @@
-function Room (game) {
-    this.sockets = [];
+function Room (id, game) {
+    this.id = id;
     this.game = game;
+    this.sockets = [];
 }
 
 Room.prototype.join = function (socket) {
