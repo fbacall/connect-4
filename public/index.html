@@ -36,13 +36,16 @@
       success: function (data) {
         data.forEach(function (result) {
           var el = $('<div class="result">' +
-                  playerName(result.winner) + ' beat ' +
+                  playerName(result.winner) + (result.draw ? ' drew against ' : ' beat ') +
                   playerName(result.loser) + '</div>');
           var board = $('<div class="board"></div>');
           el.appendTo($('#recent-results'));
           board.appendTo(el);
           drawBoard(board);
           drawGame(result.board, board);
+          if (!result.draw) {
+            highlightWinningCells(result.winning, board);
+          }
         });
       }
     });

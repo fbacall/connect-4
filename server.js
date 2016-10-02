@@ -65,7 +65,9 @@ io.on('connection', function(socket){
                     game.placeToken(column);
                     if (game.state === 'won') {
                         room.status(game.winner, 'wins!');
-                        results.push({ winner: game.winner, loser: game.loser, board: game.board });
+                        results.push({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning });
+                    } else if (game.state === 'draw') {
+                        results.push({ draw: true, winner: game.player1, loser: game.player2, board: game.board });
                     }
                     room.sync();
                 }

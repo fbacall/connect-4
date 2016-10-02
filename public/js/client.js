@@ -19,6 +19,12 @@ function drawGame (board, element) {
     }
 }
 
+function highlightWinningCells (winning, element) {
+    winning.forEach((c) => {
+        element.find(`.column:eq(${c[0]}) .cell:eq(${c[1]})`).addClass('winning');
+    });
+}
+
 function playerName (player) {
     return '<span class="player-name'+(player.number ? ` player-${player.number}` : '') +'">' + player.name + '</span>';
 }
@@ -53,11 +59,7 @@ function connect () {
         drawGame(game.board, $('#board'));
         if (game.state === 'won') {
             $('#status').html(`${playerName(game.turn)} wins!`);
-
-            // Highlight winning 4
-            game.winning.forEach((c) => {
-                $('#board').find(`.column:eq(${c[0]}) .cell:eq(${c[1]})`).addClass('winning');
-            });
+            highlightWinningCells(game.winning, $('#board'));
         } else if (game.state === 'draw') {
             $('#status').html('Draw!');
         } else if (game.state === 'waiting') {
