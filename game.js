@@ -26,7 +26,7 @@ Game.prototype.addPlayer = function (player) {
         this.player2 = player;
     }
 
-    if (this.player1 && this.player2) {
+    if (this.player1 && this.player2 && this.state === 'waiting') {
         this.start();
     }
 
@@ -62,6 +62,7 @@ Game.prototype.placeToken = function (column) {
             if (this.checkWin(column, this.board[column].length - 1)) {
                 this.state = 'won';
                 this.winner = this.turn;
+                this.loser = this.player1 === this.turn ? this.player2 : this.player1;
             } else if (this.checkDraw()) {
                 this.state = 'draw';
             } else {
@@ -86,7 +87,6 @@ Game.prototype.checkWin = function (column, row) {
         game.winning = [[column, row]];
 
         // Check forwards and backwards along the given direction
-        
         [1, -1].some(function (modifier) {
             var checkedColumn = column + (dir[0] * modifier);
             var checkedRow = row + (dir[1] * modifier);

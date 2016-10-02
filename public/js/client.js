@@ -11,10 +11,10 @@ function drawBoard (element) {
     }
 }
 
-function drawGame (game, element) {
-    for (let col = 0; col < game.board.length; col++) {
-        for (let row = 0; row < game.board[col].length; row++) {
-            element.find(`.column:eq(${col}) .cell:eq(${row})`).addClass(`player-${game.board[col][row]}`);
+function drawGame (board, element) {
+    for (let col = 0; col < board.length; col++) {
+        for (let row = 0; row < board[col].length; row++) {
+            element.find(`.column:eq(${col}) .cell:eq(${row})`).addClass(`player-${board[col][row]}`);
         }
     }
 }
@@ -44,7 +44,7 @@ function connect () {
     });
 
     socket.on('state', function (game) {
-        drawGame(game, $('#board'));
+        drawGame(game.board, $('#board'));
         if (game.state === 'won') {
             $('#status').html(`${playerName(game.turn)} wins!`);
 

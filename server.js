@@ -7,6 +7,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var rooms = { debug: new Room(new Game(7,6)) };
+var results = [];
 
 app.use(express.static('public'));
 
@@ -29,6 +30,10 @@ app.get('/game/:id', function (req, res) {
     } else {
         res.status(404).send('Invalid game ID');
     }
+});
+
+app.get('/results', function (req, res) {
+    res.send(results.slice(-10));
 });
 
 http.listen(3000, function(){
@@ -58,6 +63,10 @@ io.on('connection', function(socket){
             socket.on('place-token', function(column) {
                 if (game.turn === player) {
                     game.placeToken(column);
+                    if (game.state === 'won') {
+                        room.status(game.winner, 'wins!');
+                        results.push({ winner: game.winner, loser: game.loser, board: game.board });
+                    }
                     room.sync();
                 }
             });
