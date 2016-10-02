@@ -50,11 +50,7 @@ io.on('connection', function(socket){
             player.name = 'anon-' + (room.sockets.length + 1);
         }
 
-        room.join(socket);
-
         if (game.player1 && game.player2) {
-            console.log("Game is full!");
-            socket.emit('state', game.getState());
         } else {
             game.addPlayer(player);
             socket.emit('player-number', player.number);
@@ -66,6 +62,8 @@ io.on('connection', function(socket){
                 }
             });
         }
+
+        room.join(socket);
         room.sync();
 
         socket.on('chat-message', function (msg) {

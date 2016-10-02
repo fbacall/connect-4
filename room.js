@@ -18,11 +18,11 @@ Room.prototype.leave = function (socket) {
 };
 
 Room.prototype.chat = function (player, msg) {
-    this.broadcast('chat-message', { player: player.name, message: escapeHtml(msg) });
+    this.broadcast('chat-message', { player: player, message: escapeHtml(msg) });
 };
 
 Room.prototype.status = function (player, msg) {
-    this.broadcast('chat-status', { player: player.name, message: msg });
+    this.broadcast('chat-status', { player: player, message: msg });
 };
 
 Room.prototype.sync = function () {

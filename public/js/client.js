@@ -19,6 +19,10 @@ function drawGame (game, element) {
     }
 }
 
+function playerName(player) {
+    return '<span class="player-name'+(player.number ? ` player-${player.number}` : '') +'">' + player.name + '</span>';
+}
+
 function connect () {
     var name = $('#name-input').val();
 
@@ -29,29 +33,31 @@ function connect () {
     });
 
     socket.on('chat-message', function (data) {
-        $('#chat').append(
-            '<div class="chat-message"><span class="player-name">' + data.player + ':</span>' +
-            ' <span class="message">' + data.message + '</span></div>');
+        $('<div class="chat-message">' + playerName(data.player) +
+            ': <span class="message">' + data.message + '</span></div>').appendTo($('#chat'));
+
     });
 
     socket.on('chat-status', function (data) {
         $('#chat').append(
-            '<div class="chat-status">' + data.player + ' ' + data.message + '</div>');
+            '<div class="chat-status">' + playerName(data.player) + ' ' + data.message + '</div>');
     });
 
     socket.on('state', function (game) {
         drawGame(game, $('#board'));
         if (game.state === 'won') {
-            $('#status').text(`Player ${game.winner.number} wins!`).addClass(`player-${game.winner.number}`);
+            $('#status').html(`${playerName(game.turn)} wins!`);
+
+            // Highlight winning 4
             game.winning.forEach((c) => {
                 $('#board').find(`.column:eq(${c[0]}) .cell:eq(${c[1]})`).addClass('winning');
             });
         } else if (game.state === 'draw') {
-            $('#status').text('Draw!').removeClass('player-1 player-2');
+            $('#status').html('Draw!');
         } else if (game.state === 'waiting') {
-            $('#status').text('Waiting for opponent to join').removeClass('player-1 player-2');
+            $('#status').html('Waiting for opponent to join');
         } else if (game.state === 'active') {
-            $('#status').text(`Player ${game.turn.number}'s turn`).removeClass('player-1 player-2').addClass(`player-${game.turn.number}`);
+            $('#status').html(`${playerName(game.turn)}'s turn`);
         }
 
         $('#chat-status').text(game.connected + ' users connected');
@@ -85,7 +91,6 @@ $(document).ready(function () {
                 $(this).val('');
             }
         });
-
     }
 });
 
