@@ -76,11 +76,11 @@ Game.prototype.placeToken = function (column) {
 };
 
 Game.prototype.checkWin = function (column, row) {
-    var directions = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+    var directions = [[0, 1], [1, -1], [1, 0], [1, 1]];
     var player = this.board[column][row];
     var victory = false;
 
-    // Check each of the 8 directions around the selected cell
+    // Check each of the 4 axes around the selected cell
     var game = this;
     directions.some(function (dir) {
         var connected = 1;
