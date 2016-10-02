@@ -19,7 +19,9 @@ function drawGame (game, element) {
     }
 }
 
-function connect (name) {
+function connect () {
+    var name = $('#name-input').val();
+
     socket = io.connect('', {query: 'name=' + name + '&id=' + id});
 
     socket.on('player-number', function (number) {
@@ -29,7 +31,7 @@ function connect (name) {
     socket.on('chat-message', function (data) {
         $('#chat').append(
             '<div class="chat-message"><span class="player-name">' + data.player + ':</span>' +
-            '<span class="message">' + data.message + '</span></div>');
+            ' <span class="message">' + data.message + '</span></div>');
     });
 
     socket.on('chat-status', function (data) {
@@ -54,6 +56,8 @@ function connect (name) {
 
         $('#chat-status').text(game.connected + ' users connected');
     });
+
+    $('#name-modal').modal('hide');
 }
 
 $(document).ready(function () {
@@ -64,11 +68,11 @@ $(document).ready(function () {
         id = match[1];
         $('#name-modal').modal('show');
 
-        $('#connect').click(function () {
-            var name = $('#name-input').val();
-            connect(name);
-            console.log(name);
-            $('#name-modal').modal('hide');
+        $('#connect').click(connect);
+        $('#name-input').keyup(function (e) {
+            if (e.keyCode == 13) {
+                connect();
+            }
         });
 
         $('.column').click(function () {
@@ -76,7 +80,7 @@ $(document).ready(function () {
         });
 
         $('#chat-input').keyup(function (e) {
-            if (e.keyCode === 13) {
+            if (e.keyCode == 13) {
                 socket.emit('chat-message', $(this).val());
                 $(this).val('');
             }
