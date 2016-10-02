@@ -19,8 +19,13 @@ function drawGame (board, element) {
     }
 }
 
-function playerName(player) {
+function playerName (player) {
     return '<span class="player-name'+(player.number ? ` player-${player.number}` : '') +'">' + player.name + '</span>';
+}
+
+function scrollChat () {
+    var e = $('#chat');
+    e.scrollTop(e[0].scrollHeight);
 }
 
 function connect () {
@@ -35,12 +40,13 @@ function connect () {
     socket.on('chat-message', function (data) {
         $('<div class="chat-message">' + playerName(data.player) +
             ': <span class="message">' + data.message + '</span></div>').appendTo($('#chat'));
-
+        scrollChat();
     });
 
     socket.on('chat-status', function (data) {
         $('#chat').append(
             '<div class="chat-status">' + playerName(data.player) + ' ' + data.message + '</div>');
+        scrollChat();
     });
 
     socket.on('state', function (game) {

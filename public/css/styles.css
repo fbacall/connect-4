@@ -51,6 +51,8 @@ body {
     width: 300px;
     position: relative;
     background-color: #cad2dd;
+    display: flex;
+    flex-direction: column;
 }
 
 .board {
@@ -60,7 +62,7 @@ body {
     border-style: solid;
     border-width: 5px 0;
     margin: auto;
-    width: 60%;
+    width: 45vw;
     max-width: 1200px;
 }
 
@@ -115,6 +117,8 @@ body {
 
 #chat {
     padding: 5px;
+    flex-grow: 1;
+    overflow-y: scroll;
 }
 
 #chat-status {
@@ -123,12 +127,10 @@ body {
 }
 
 #chat-input {
-    position: absolute;
-    bottom: 0;
+    flex-shrink: 0;
     padding: 10px;
     border: none;
     background-color: white;
-    width: 300px;
 }
 
 .player-name {
@@ -137,4 +139,34 @@ body {
 
 .chat-status {
     font-style: italic;
+}
+
+@media only screen and (max-width : 768px) {
+    .game-container {
+        flex-direction: column;
+    }
+
+    .board-container {
+        padding: 5px 5px 20px 5px;
+        flex-grow: 0;
+    }
+
+    .chat-container {
+        height: 120px;
+        width: 100%;
+        flex-grow: 1;
+    }
+
+    #chat-status {
+        position: absolute;
+        right: 0;
+    }
+
+    .board {
+        width: 90vw;
+    }
+
+    .cell {
+        height: 10vw;
+    }
 }
