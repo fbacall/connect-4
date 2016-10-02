@@ -59,6 +59,8 @@ function connect (name) {
 $(document).ready(function () {
     var match = location.href.match(/\/game\/([a-z0-9]+)/);
     if (match) {
+        drawBoard($('#board'));
+
         id = match[1];
         $('#name-modal').modal('show');
 
@@ -80,7 +82,6 @@ $(document).ready(function () {
             }
         });
 
-        drawBoard($('#board'));
     }
 });
 
