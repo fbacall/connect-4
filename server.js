@@ -46,6 +46,10 @@ io.on('connection', function(socket){
     if (room) {
         var game = room.game;
 
+        if (player.name.replace(/ /g,'') === '') {
+            player.name = 'anon-' + (room.sockets.length + 1);
+        }
+
         room.join(socket);
 
         if (game.player1 && game.player2) {
