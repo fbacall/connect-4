@@ -8,12 +8,12 @@ Room.prototype.join = function (socket) {
     this.status(socket.player, 'joined');
 };
 
-Room.prototype.leave = function (player) {
-    var index = this.sockets.indexOf(player.socket);
+Room.prototype.leave = function (socket) {
+    var index = this.sockets.indexOf(socket);
 
     if (index !== -1) {
         this.sockets.splice(index, 1);
-        this.status(player, 'left');
+        this.status(socket.player, 'left');
     }
 };
 
