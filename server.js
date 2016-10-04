@@ -6,9 +6,26 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var fs = require('fs');
 
 var rooms = { debug: new Room('debug', new Game(7,6)) };
+
+// Results
 var results = [];
+var RESULTS_FILE = 'results.json';
+
+try {
+    console.log('Reading results file...');
+    var file = fs.readFileSync(RESULTS_FILE);
+    results = JSON.parse(file);
+}
+catch (e) {
+    if (e instanceof Error && e.code == 'ENOENT') {
+        console.log('No ' + RESULTS_FILE + ' file found!')
+    } else {
+        throw e;
+    }
+}
 
 app.use(express.static('public'));
 
@@ -50,6 +67,11 @@ function sweepRoom(room, timer) {
     }, timer);
 }
 
+function pushResult(result) {
+    results.push(result);
+    fs.writeFile(RESULTS_FILE, JSON.stringify(results));
+}
+
 io.on('connection', function(socket){
     var roomId = socket.handshake.query.id;
     var name = sanitizer.sanitize(socket.handshake.query.name).substr(0,30);
@@ -73,9 +95,9 @@ io.on('connection', function(socket){
                     game.placeToken(column);
                     if (game.state === 'won') {
                         room.status(game.winner, 'wins!');
-                        results.push({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning });
+                        pushResult({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning });
                     } else if (game.state === 'draw') {
-                        results.push({ draw: true, winner: game.player1, loser: game.player2, board: game.board });
+                        pushResult({ draw: true, winner: game.player1, loser: game.player2, board: game.board });
                     }
                     room.sync();
                 }
