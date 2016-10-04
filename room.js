@@ -1,3 +1,5 @@
+var sanitizer = require('sanitizer');
+
 function Room (id, game) {
     this.id = id;
     this.game = game;
@@ -5,6 +7,7 @@ function Room (id, game) {
 }
 
 Room.prototype.join = function (socket) {
+    this.setUniqueName(socket.player);
     this.sockets.push(socket);
     this.status(socket.player, 'joined');
 };
@@ -19,7 +22,7 @@ Room.prototype.leave = function (socket) {
 };
 
 Room.prototype.chat = function (player, msg) {
-    this.broadcast('chat-message', { player: player, message: escapeHtml(msg) });
+    this.broadcast('chat-message', { player: player, message: sanitizer.sanitize(msg).substr(0, 255) });
 };
 
 Room.prototype.status = function (player, msg) {
@@ -38,8 +41,21 @@ Room.prototype.broadcast = function (key, data) {
     });
 };
 
-function escapeHtml(unsafe) {
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
+Room.prototype.setUniqueName = function (player) {
+    var suggestedName = player.name;
+    var unique = false;
+    var index = 2;
+    do {
+        this.sockets.forEach(function (socket) {
+            if (socket.player.name === suggestedName) {
+                suggestedName = player.name + ' (' + index + ')';
+                index++;
+            }
+        });
+        unique = true;
+    } while (!unique);
+
+    player.name = suggestedName;
+};
 
 module.exports = Room;

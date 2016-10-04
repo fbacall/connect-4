@@ -1,6 +1,7 @@
 var Game = require('./game.js');
 var Room = require('./room.js');
 
+var sanitizer = require('sanitizer');
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -51,8 +52,11 @@ function sweepRoom(room, timer) {
 
 io.on('connection', function(socket){
     var roomId = socket.handshake.query.id;
-    var name = socket.handshake.query.name;
-    console.log((name || 'anonymous user') + ' connected');
+    var name = sanitizer.sanitize(socket.handshake.query.name).substr(0,30);
+    if (name.replace(/ /g,'') === '') {
+        name = 'anon';
+    }
+    console.log(name + ' connected');
     var room = rooms[roomId];
     var player = { name: name };
     socket.player = player;
@@ -60,12 +64,7 @@ io.on('connection', function(socket){
     if (room) {
         var game = room.game;
 
-        if (player.name.replace(/ /g,'') === '') {
-            player.name = 'anon-' + (room.sockets.length + 1);
-        }
-
-        if (game.player1 && game.player2) {
-        } else {
+        if (!(game.player1 && game.player2)) {
             game.addPlayer(player);
             socket.emit('player-number', player.number);
 
