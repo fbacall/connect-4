@@ -9,6 +9,7 @@
   "author": "Finn Bacall",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "express": "~4.12.3",
     "socket.io": "~1.4.8",
     "sanitizer": "~0.1.3"

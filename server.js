@@ -3,6 +3,7 @@ var Room = require('./room.js');
 
 var sanitizer = require('sanitizer');
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -28,13 +29,23 @@ catch (e) {
 }
 
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/game', function (req, res) {
-    // Generate a unique ID
     var id;
-    do {
-        id = Math.random().toString(36).substr(2, 9);
-    } while (typeof rooms[id] !== 'undefined');
+
+    if (req.body.geohash) {
+        // Generate a unique ID from the Geohash by adding numbers to the end of it.
+        var modifier = 0;
+        do {
+            id = req.body.geohash + (modifier++ == 0 ? '' : modifier.toString());
+        } while (typeof rooms[id] !== 'undefined');
+    } else {
+        // Generate a unique ID
+        do {
+            id = Math.random().toString(36).substr(2, 9);
+        } while (typeof rooms[id] !== 'undefined');
+    }
 
     rooms[id] = new Room(id, new Game(7,6));
     console.log('Created new room:', id);
@@ -49,6 +60,21 @@ app.get('/game/:id', function (req, res) {
     } else {
         res.status(404).send('Invalid game ID');
     }
+});
+
+app.get('/games/:geohash', function (req, res) {
+    var list = [];
+    for (var i = req.params.geohash.length; i > 0; i--) {
+        var fragment = req.params.geohash.substr(0, i);
+        console.log('Finding games near ', fragment);
+        if (rooms[fragment] && rooms[fragment].game.player1) {
+            list.push({ id: fragment, game: rooms[fragment].game });
+        }
+        if (list.length >= 10)
+            break;
+    }
+
+    res.send(list);
 });
 
 app.get('/results', function (req, res) {

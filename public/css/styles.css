@@ -14,27 +14,34 @@ body {
     margin-top: 20px;
 }
 
-#recent-results {
-    text-align: center;
+#recent-results, #local-games {
     font-size: larger;
 }
 
-.result {
+a.local-game {
+
+}
+
+.small-board {
     float: left;
     margin: 5px;
     width: 215px;
 }
 
-.result .board {
+.small-board .board {
     width: 100px;
     border: none;
 }
 
-.result .board .column {
+.small-board .board .column {
     border-width: 2px 0;
 }
 
-.result .board .cell {
+.small-board .board .column:hover {
+    background-color: inherit;
+}
+
+.small-board .board .cell {
     height: 12px;
 }
 
