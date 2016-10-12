@@ -1,5 +1,6 @@
 var Game = require('./game.js');
 var Room = require('./room.js');
+var GeohashMap = require('./geohash_map.js');
 
 var sanitizer = require('sanitizer');
 var express = require('express');
@@ -10,6 +11,7 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 
 var rooms = { debug: new Room('debug', new Game(7,6)) };
+var geohashMap = new GeohashMap();
 
 // Results
 var results = [];
@@ -34,21 +36,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/game', function (req, res) {
     var id;
 
-    if (req.body.geohash) {
-        // Generate a unique ID from the Geohash by adding numbers to the end of it.
-        var modifier = 0;
-        do {
-            id = req.body.geohash + (modifier++ == 0 ? '' : modifier.toString());
-        } while (typeof rooms[id] !== 'undefined');
-    } else {
-        // Generate a unique ID
-        do {
-            id = Math.random().toString(36).substr(2, 9);
-        } while (typeof rooms[id] !== 'undefined');
-    }
+    // Generate a unique ID
+    do {
+        id = Math.random().toString(36).substr(2, 9);
+    } while (typeof rooms[id] !== 'undefined');
 
     rooms[id] = new Room(id, new Game(7,6));
     console.log('Created new room:', id);
+    if (req.body.geohash) {
+        rooms[id].geohash = req.body.geohash;
+        geohashMap.add(req.body.geohash, rooms[id]);
+        console.log('  with geohash:', req.body.geohash);
+    }
     sweepRoom(rooms[id], 10 * 60 * 1000);
 
     res.redirect('/game/' + id);
@@ -63,16 +62,9 @@ app.get('/game/:id', function (req, res) {
 });
 
 app.get('/games/:geohash', function (req, res) {
-    var list = [];
-    for (var i = req.params.geohash.length; i > 0; i--) {
-        var fragment = req.params.geohash.substr(0, i);
-        console.log('Finding games near ', fragment);
-        if (rooms[fragment] && rooms[fragment].game.player1) {
-            list.push({ id: fragment, game: rooms[fragment].game });
-        }
-        if (list.length >= 10)
-            break;
-    }
+    var list = geohashMap.nearest(req.params.geohash, 10).map(function (room) {
+        return { id: room.id, game: room.game };
+    });
 
     res.send(list);
 });
@@ -90,6 +82,7 @@ function sweepRoom(room, timer) {
     room.sweeper = setTimeout(function () {
         console.log('Deleting empty room:', room.id);
         delete rooms[room.id];
+        geohashMap.remove(room.geohash, room);
     }, timer);
 }
 

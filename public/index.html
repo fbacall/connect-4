@@ -57,7 +57,7 @@
       callback(geohash);
     } else {
       navigator.geolocation.getCurrentPosition(function (pos) {
-        geohash = Geohash.encode(pos.coords.latitude, pos.coords.longitude);
+        geohash = Geohash.encode(pos.coords.latitude, pos.coords.longitude, 9);
         callback(geohash);
       });
     }
@@ -101,6 +101,12 @@
           document.getElementById('form').submit();
         });
         return false;
+      });
+
+      $('#create-game').show().click(function () {
+        $('#geohash').val('');
+
+        return true;
       });
     }
 
