@@ -76,15 +76,17 @@
               $('#local-games').html('');
               if (data.length) {
                 data.forEach(function (data) {
-                  var el = $('<a href="/game/'+data.id+'" class="local-game small-board">' +
-                          playerName(data.game.player1) +
-                          (data.game.player2 ? ' vs. ' + playerName(data.game.player2) : "'s game") +
-                          '</a>');
-                  var board = $('<div class="board"></div>');
-                  el.appendTo($('#local-games'));
-                  board.appendTo(el);
-                  drawBoard(board);
-                  drawGame(data.game.board, board);
+                  if (data.game.player1) {
+                    var el = $('<a href="/game/'+data.id+'" class="local-game small-board">' +
+                            playerName(data.game.player1) +
+                            (data.game.player2 ? ' vs. ' + playerName(data.game.player2) : "'s game") +
+                            '</a>');
+                    var board = $('<div class="board"></div>');
+                    el.appendTo($('#local-games'));
+                    board.appendTo(el);
+                    drawBoard(board);
+                    drawGame(data.game.board, board);
+                  }
                 });
               } else {
                 $('#local-games').text('No games found');
