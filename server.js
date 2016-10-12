@@ -82,7 +82,9 @@ function sweepRoom(room, timer) {
     room.sweeper = setTimeout(function () {
         console.log('Deleting empty room:', room.id);
         delete rooms[room.id];
-        geohashMap.remove(room.geohash, room);
+        if (room.geohash) {
+            geohashMap.remove(room.geohash, room);
+        }
     }, timer);
 }
 
