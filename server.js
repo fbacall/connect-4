@@ -106,9 +106,9 @@ io.on('connection', function(socket){
                     game.placeToken(column);
                     if (game.state === 'won') {
                         room.status(game.winner, 'wins!');
-                        pushResult({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning });
+                        pushResult({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning, columns: game.columns, rows: game.rows  });
                     } else if (game.state === 'draw') {
-                        pushResult({ draw: true, winner: game.player1, loser: game.player2, board: game.board });
+                        pushResult({ draw: true, winner: game.player1, loser: game.player2, board: game.board, columns: game.columns, rows: game.rows });
                     }
                     room.sync();
                 }

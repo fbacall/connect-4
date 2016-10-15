@@ -165,7 +165,7 @@
             var board = $('<div class="board"></div>');
             el.appendTo($('#recent-results'));
             board.appendTo(el);
-            drawBoard(board, result.board.length, result.board[0].length);
+            drawBoard(board, result.columns, result.rows);
             drawGame(result.board, board);
             if (!result.draw) {
               highlightWinningCells(result.winning, board);
