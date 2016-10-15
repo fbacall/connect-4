@@ -1,10 +1,12 @@
 var socket;
 var id;
 
-function drawBoard (element) {
-    for (let col = 0; col < 7; col++) {
+function drawBoard (element, cols, rows) {
+    cols = cols || 7;
+    rows = rows || 6;
+    for (let col = 0; col < cols; col++) {
         var html = '<div class="column">';
-        for (let row = 0; row < 6; row++) {
+        for (let row = 0; row < rows; row++) {
             html += '<div class="cell"></div>';
         }
         element.append(html + '</div>');
@@ -56,6 +58,11 @@ function connect () {
     });
 
     socket.on('state', function (game) {
+        console.log(game);
+        if (!$('#board').children().length) {
+            drawBoard($('#board'), game.columns, game.rows);
+            $('#numToWin').text(game.toWin);
+        }
         drawGame(game.board, $('#board'));
         if (game.state === 'won') {
             $('#status').html(`${playerName(game.turn)} wins!`);
@@ -77,8 +84,6 @@ function connect () {
 $(document).ready(function () {
     var match = location.href.match(/\/game\/([a-z0-9]+)/);
     if (match) {
-        drawBoard($('#board'));
-
         id = match[1];
         $('#name-modal').modal('show');
 
@@ -89,7 +94,7 @@ $(document).ready(function () {
             }
         });
 
-        $('.column').click(function () {
+        $('#board').on('click','.column', function () {
             socket.emit('place-token', $(this).index());
         });
 

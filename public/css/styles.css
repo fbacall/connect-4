@@ -30,6 +30,7 @@ a.local-game {
 
 .small-board .board {
     width: 100px;
+    height: 75px;
     border: none;
 }
 
@@ -42,7 +43,6 @@ a.local-game {
 }
 
 .small-board .board .cell {
-    height: 12px;
 }
 
 .game-container {
@@ -71,6 +71,7 @@ a.local-game {
     flex-direction: row;
     margin: auto;
     width: 45vw;
+    height: 30vw;
     max-width: 1200px;
     background-color: #a3abb6;
     border-radius: 10px;
@@ -83,7 +84,7 @@ a.local-game {
     border-color: #202b41;
     border-style: solid;
     border-width: 5px 0;
-    width: 14.286%;
+    flex-grow: 1;
 }
 
 .column:hover {
@@ -91,12 +92,11 @@ a.local-game {
 }
 
 .cell {
-    height: 5vw;
+    flex-grow: 1;
     background-image: url('../images/cell.png');
     background-position: center center;
     background-size: 100% 100%;
     text-align: center;
-    line-height: 48px;
 }
 
 .cell.player-1 {
@@ -179,8 +179,8 @@ a.local-game {
     .board {
         width: 90vw;
     }
+}
 
-    .cell {
-        height: 10vw;
-    }
+#options {
+    margin-top: 1em;
 }

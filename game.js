@@ -1,9 +1,8 @@
-function Game (columns, rows, player1, player2) {
-    this.columns = columns;
-    this.rows = rows;
-    this.player1 = player1;
-    this.player2 = player2;
-    this.turn = player1;
+function Game (columns, rows, toWin) {
+    this.columns = columns || 7;
+    this.rows = rows || 6;
+    this.toWin = toWin || 4;
+
     this.winner = null;
     this.state = 'waiting';
 
@@ -95,7 +94,7 @@ Game.prototype.checkWin = function (column, row) {
                 if (game.board[checkedColumn][checkedRow] === player) {
                     connected++;
                     game.winning.push([checkedColumn, checkedRow]);
-                    if (connected == 4) {
+                    if (connected == game.toWin) {
                         victory = true;
                         return true;
                     }
@@ -138,9 +137,10 @@ Game.prototype.getState = function () {
       winning: this.winning,
       winner: this.winner,
       turn: this.turn,
-      board: this.board
-      //player1: this.player1.name,
-      //player2: this.player2.name
+      board: this.board,
+      rows: this.rows,
+      columns: this.columns,
+      toWin: this.toWin
   };
 };
 

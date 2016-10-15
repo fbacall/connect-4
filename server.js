@@ -10,7 +10,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 
-var rooms = { debug: new Room('debug', new Game(7,6)) };
+var rooms = { debug: new Room('debug', new Game(7, 6)),
+              debug2: new Room('debug2', new Game(9, 9, 5))};
 var geohashMap = new GeohashMap();
 
 // Results
@@ -34,15 +35,20 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/game', function (req, res) {
-    var id;
-
     // Generate a unique ID
+    var id;
     do {
         id = Math.random().toString(36).substr(2, 9);
     } while (typeof rooms[id] !== 'undefined');
 
-    rooms[id] = new Room(id, new Game(7,6));
-    console.log('Created new room:', id);
+    var cols = constrain(req.body.cols, 7, 4, 10);
+    var rows = constrain(req.body.rows, 6, 4, 10);
+    var toWin = constrain(req.body.toWin, 4, 3, 7);
+
+    rooms[id] = new Room(id, new Game(cols, rows, toWin));
+    console.log('Created new room:', id,
+        '( cols: ', cols, ', rows: ', rows, ' to win: ', toWin, ')');
+
     if (req.body.geohash) {
         rooms[id].geohash = req.body.geohash;
         geohashMap.add(req.body.geohash, rooms[id]);
@@ -76,22 +82,6 @@ app.get('/results', function (req, res) {
 http.listen(3000, function(){
     console.log('listening on *:3000');
 });
-
-function sweepRoom(room, timer) {
-    console.log('Starting delete timer for room:', room.id);
-    room.sweeper = setTimeout(function () {
-        console.log('Deleting empty room:', room.id);
-        delete rooms[room.id];
-        if (room.geohash) {
-            geohashMap.remove(room.geohash, room);
-        }
-    }, timer);
-}
-
-function pushResult(result) {
-    results.push(result);
-    fs.writeFile(RESULTS_FILE, JSON.stringify(results));
-}
 
 io.on('connection', function(socket){
     var roomId = socket.handshake.query.id;
@@ -153,3 +143,31 @@ io.on('connection', function(socket){
         }
     });
 });
+
+
+function sweepRoom(room, timer) {
+    console.log('Starting delete timer for room:', room.id);
+    room.sweeper = setTimeout(function () {
+        console.log('Deleting empty room:', room.id);
+        delete rooms[room.id];
+        if (room.geohash) {
+            geohashMap.remove(room.geohash, room);
+        }
+    }, timer);
+}
+
+function pushResult(result) {
+    results.push(result);
+    fs.writeFile(RESULTS_FILE, JSON.stringify(results));
+}
+
+function constrain(value, defaultValue, min, max) {
+    if (!value)
+        return defaultValue;
+    else if (value > max)
+        return max;
+    else if (value < min)
+        return min;
+    else
+        return value;
+}
