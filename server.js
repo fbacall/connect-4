@@ -1,4 +1,4 @@
-var Game = require('./game.js');
+var Connect4 = require('./connect4.js');
 var Room = require('./room.js');
 var GeohashMap = require('./geohash_map.js');
 
@@ -10,8 +10,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 
-var rooms = { debug: new Room('debug', new Game(7, 6)),
-              debug2: new Room('debug2', new Game(9, 9, 5))};
+var rooms = { debug: new Room('debug', new Connect4(7, 6)),
+              debug2: new Room('debug2', new Connect4(9, 9, 5))};
 var geohashMap = new GeohashMap();
 
 // Results
@@ -45,7 +45,7 @@ app.post('/game', function (req, res) {
     var rows = constrain(req.body.rows, 6, 4, 10);
     var toWin = constrain(req.body.toWin, 4, 3, 7);
 
-    rooms[id] = new Room(id, new Game(cols, rows, toWin));
+    rooms[id] = new Room(id, new Connect4(cols, rows, toWin));
     console.log('Created new room:', id,
         '( cols: ', cols, ', rows: ', rows, ' to win: ', toWin, ')');
 
