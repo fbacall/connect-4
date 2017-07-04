@@ -1,9 +1,8 @@
-function Game(columns, rows, player1, player2) {
-    this.columns = columns;
-    this.rows = rows;
-    this.player1 = player1;
-    this.player2 = player2;
-    this.turn = player1;
+function Connect4 (columns, rows, toWin) {
+    this.columns = columns || 7;
+    this.rows = rows || 6;
+    this.toWin = toWin || 4;
+
     this.winner = null;
     this.state = 'waiting';
 
@@ -13,7 +12,7 @@ function Game(columns, rows, player1, player2) {
     }
 }
 
-Game.prototype.addPlayer = function (player) {
+Connect4.prototype.addPlayer = function (player) {
     if (this.player1 && this.player2) {
         return false;
     }
@@ -33,7 +32,7 @@ Game.prototype.addPlayer = function (player) {
     return true;
 };
 
-Game.prototype.removePlayer = function (player) {
+Connect4.prototype.removePlayer = function (player) {
     if (this.player1 === player) {
         this.player1 = null;
         return true;
@@ -45,17 +44,17 @@ Game.prototype.removePlayer = function (player) {
     }
 };
 
-Game.prototype.start = function () {
+Connect4.prototype.start = function () {
     for (var i = 0; i < this.columns; i++) {
         this.board[i] = [];
     }
 
     this.turn = this.player1;
     this.state = 'active';
-    console.log('Game started');
+    console.log('Connect4 started');
 };
 
-Game.prototype.placeToken = function (column) {
+Connect4.prototype.placeToken = function (column) {
     if (this.player1 && this.player2) {
         if (this.board[column].length < this.rows) {
             this.board[column].push(this.turn.number);
@@ -75,7 +74,7 @@ Game.prototype.placeToken = function (column) {
     }
 };
 
-Game.prototype.checkWin = function (column, row) {
+Connect4.prototype.checkWin = function (column, row) {
     var directions = [[0, 1], [1, -1], [1, 0], [1, 1]];
     var player = this.board[column][row];
     var victory = false;
@@ -95,7 +94,7 @@ Game.prototype.checkWin = function (column, row) {
                 if (game.board[checkedColumn][checkedRow] === player) {
                     connected++;
                     game.winning.push([checkedColumn, checkedRow]);
-                    if (connected == 4) {
+                    if (connected == game.toWin) {
                         victory = true;
                         return true;
                     }
@@ -114,7 +113,7 @@ Game.prototype.checkWin = function (column, row) {
     return victory;
 };
 
-Game.prototype.checkDraw = function () {
+Connect4.prototype.checkDraw = function () {
     for (var i = 0; i < this.board.length; i++) {
         if (this.board[i].length < this.rows) {
             return false
@@ -124,24 +123,25 @@ Game.prototype.checkDraw = function () {
     return true;
 };
 
-Game.prototype.validCell = function (column, row) {
+Connect4.prototype.validCell = function (column, row) {
     return column >= 0 && row >= 0 && column < this.board.length && row < this.board[column].length;
 };
 
-Game.prototype.switchPlayer = function () {
+Connect4.prototype.switchPlayer = function () {
     this.turn = this.turn === this.player1 ? this.player2 : this.player1;
 };
 
-Game.prototype.getState = function () {
+Connect4.prototype.getState = function () {
   return {
       state: this.state,
       winning: this.winning,
       winner: this.winner,
       turn: this.turn,
-      board: this.board
-      //player1: this.player1.name,
-      //player2: this.player2.name
+      board: this.board,
+      rows: this.rows,
+      columns: this.columns,
+      toWin: this.toWin
   };
 };
 
-module.exports = Game;
+module.exports = Connect4;

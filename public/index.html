@@ -24,7 +24,38 @@
       <button style="display: none" class="btn btn-lg btn-primary" id="create-geolocated-game">
         New Geo-located Game
       </button>
+      <a href="#" class="btn btn-lg btn-default" onclick="$('#options').fadeToggle();">
+        Options
+      </a>
       <input type="hidden" id="geohash" name="geohash" value=""/>
+      <div id="options" style="display: none">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="options-cols">
+                Columns: <span></span>
+              </label>
+              <input type="range" class="form-control" id="options-cols" name="cols" min="4" value="7" max="10" autocomplete="off"/>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="options-rows">
+                Rows: <span></span>
+              </label>
+              <input type="range" class="form-control" id="options-rows" name="rows" min="4" value="6" max="10" autocomplete="off"/>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="options-toWin">
+                # to win: <span></span>
+              </label>
+              <input type="range" class="form-control" id="options-toWin" name="toWin" min="3" value="4" max="7" autocomplete="off"/>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -63,7 +94,17 @@
     }
   }
 
+  function showSliderValue(slider) {
+    slider.parent().find('span').text(slider.val());
+  }
+
   $(document).ready(function () {
+    $('input[type=range]').on('input', function () {
+      showSliderValue($(this));
+    }).each(function () {
+      showSliderValue($(this));
+    });
+
     if (navigator.geolocation) {
       $('#local-games-container').show();
       // Fetch "nearby" games
@@ -124,7 +165,7 @@
             var board = $('<div class="board"></div>');
             el.appendTo($('#recent-results'));
             board.appendTo(el);
-            drawBoard(board);
+            drawBoard(board, result.columns, result.rows);
             drawGame(result.board, board);
             if (!result.draw) {
               highlightWinningCells(result.winning, board);
