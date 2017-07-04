@@ -58,7 +58,7 @@ app.post('/game', function (req, res) {
     }
     sweepRoom(rooms[id], 10 * 60 * 1000);
 
-    res.redirect('/game/' + id);
+    res.redirect('game/' + id);
 });
 
 app.get('/game/:id', function (req, res) {
