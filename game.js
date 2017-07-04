@@ -1,4 +1,4 @@
-function Game (columns, rows, player1, player2) {
+function Game(columns, rows, player1, player2) {
     this.columns = columns;
     this.rows = rows;
     this.player1 = player1;

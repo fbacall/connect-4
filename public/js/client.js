@@ -1,7 +1,7 @@
 var socket;
 var id;
 
-function drawBoard (element) {
+function drawBoard(element) {
     for (let col = 0; col < 7; col++) {
         var html = '<div class="column">';
         for (let row = 0; row < 6; row++) {
@@ -11,7 +11,7 @@ function drawBoard (element) {
     }
 }
 
-function drawGame (board, element) {
+function drawGame(board, element) {
     for (let col = 0; col < board.length; col++) {
         for (let row = 0; row < board[col].length; row++) {
             element.find(`.column:eq(${col}) .cell:eq(${row})`).addClass(`player-${board[col][row]}`);
@@ -19,25 +19,26 @@ function drawGame (board, element) {
     }
 }
 
-function highlightWinningCells (winning, element) {
+function highlightWinningCells(winning, element) {
     winning.forEach((c) => {
         element.find(`.column:eq(${c[0]}) .cell:eq(${c[1]})`).addClass('winning');
     });
 }
 
-function playerName (player) {
+function playerName(player) {
     return '<span class="player-name'+(player.number ? ` player-${player.number}` : '') +'">' + player.name + '</span>';
 }
 
-function scrollChat () {
+function scrollChat() {
     var e = $('#chat');
     e.scrollTop(e[0].scrollHeight);
 }
 
-function connect () {
+function connect() {
     var name = $('#name-input').val();
 
-    socket = io.connect('', {query: 'name=' + name + '&id=' + id});
+    var parts = window.location.pathname.split('/');
+    socket = io({ path: parts.slice(0, parts.length - 2).join('/') + '/socket.io', query: 'name=' + name + '&id=' + id});
 
     socket.on('player-number', function (number) {
         $('#player').text(`You are player ${number}`).addClass(`player-${number}`)

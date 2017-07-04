@@ -10,6 +10,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 
+var port = parseInt(process.argv[2] || '3000');
+
 var rooms = { debug: new Room('debug', new Game(7,6)) };
 var geohashMap = new GeohashMap();
 
@@ -73,8 +75,8 @@ app.get('/results', function (req, res) {
     res.send(results.slice(-10));
 });
 
-http.listen(3000, function(){
-    console.log('listening on *:3000');
+http.listen(port, function(){
+    console.log('listening on *:' + port);
 });
 
 function sweepRoom(room, timer) {
