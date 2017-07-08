@@ -1,24 +1,34 @@
 {
   "name": "connect-4",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Multiplayer connect-4",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Finn Bacall",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "~4.12.3",
-    "socket.io": "~1.4.8",
-    "sanitizer": "~0.1.3",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-scripts": "1.0.10"
+    "react-scripts": "1.0.10",
+    "sanitizer": "~0.1.3",
+    "socket.io": "~2.0.3",
+    "socket.io-client": "^2.0.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/fbacall/connect-4.git"
+  },
+  "scripts": {
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^3.1.0"
   }
 }

@@ -2,23 +2,22 @@ var Connect4 = require('./connect4.js');
 var Room = require('./room.js');
 var GeohashMap = require('./geohash_map.js');
 
-var sanitizer = require('sanitizer');
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
+var Sanitizer = require('sanitizer');
+var Express = require('express');
+var BodyParser = require('body-parser');
+var app = Express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 
-var port = parseInt(process.argv[2] || '3000');
-
-var rooms = { debug: new Room('debug', new Connect4(7, 6)),
-              debug2: new Room('debug2', new Connect4(9, 9, 5))};
-var geohashMap = new GeohashMap();
+const port = parseInt(process.argv[2] || '3000');
+const rooms = { debug: new Room('debug', new Connect4(7, 6)),
+    debug2: new Room('debug2', new Connect4(9, 9, 5))};
+const geohashMap = new GeohashMap();
 
 // Results
-var results = [];
-var RESULTS_FILE = 'results.json';
+let results = [];
+const RESULTS_FILE = 'results.json';
 
 try {
     console.log('Reading results file...');
@@ -33,8 +32,8 @@ catch (e) {
     }
 }
 
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(Express.static('public'));
+app.use(BodyParser.urlencoded({ extended: true }));
 
 app.post('/game', function (req, res) {
     // Generate a unique ID
@@ -87,7 +86,7 @@ http.listen(port, function(){
 
 io.on('connection', function(socket){
     var roomId = socket.handshake.query.id;
-    var name = sanitizer.sanitize(socket.handshake.query.name).substr(0,30);
+    var name = Sanitizer.sanitize(socket.handshake.query.name).substr(0,30);
     if (name.replace(/ /g,'') === '') {
         name = 'anon';
     }

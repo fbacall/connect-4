@@ -9,7 +9,7 @@
   <title>Connect 4</title>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="/css/styles.css">
   <script src="../socket.io/socket.io.js"></script>
 </head>
 
@@ -21,7 +21,7 @@
         <div class="modal-header">
           <h4 class="modal-title">Enter your name...</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body import declarations may only appear at top level of a module">
           <div class="input-group">
             <input type="text" id="name-input" placeholder="Joe Bloggs" class="form-control">
             <span class="input-group-btn">
@@ -38,7 +38,7 @@
 
     <div id="player">You are spectating</div>
     <div id="status"></div>
-    <div class="board" id="board"></div>
+    <div id="board"></div>
   </div>
   <div class="chat-container">
     <div id="chat-status"></div>
@@ -46,9 +46,8 @@
     <input type="text" id="chat-input" placeholder="Type here to chat...">
   </div>
 </div>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script src="../js/client.js"></script>
+<script src="/js/app.bundle.js"></script>
 </body>
 </html>
