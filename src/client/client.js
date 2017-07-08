@@ -25,7 +25,7 @@ function showSliderValue(slider) {
 function Column(props) {
     let cells = [];
     for (let i = 0; i < props.rows; i++) {
-        cells.push(<Cell key={i} />);
+        cells.push(<Cell key={i} player={props.cells[i]}/>);
     }
     return (
         <div className="column">
@@ -47,10 +47,6 @@ function Cell(props) {
 class Board extends React.Component {
     constructor() {
         super();
-        this.state = {
-            squares: Array(9).fill(null),
-            xIsNext: true
-        };
     }
 
     handleClick(i) {
@@ -65,10 +61,11 @@ class Board extends React.Component {
     render() {
         let cols = this.props.cols || 7;
         let rows = this.props.rows || 6;
+        let board = this.props.board || (new Array(parseInt(cols)).fill([]));
         let colList = [];
 
         for (let i = 0; i < cols; i++) {
-            colList.push(<Column rows={rows} key={i} />);
+            colList.push(<Column rows={rows} key={i} cells={board[i]} />);
         }
 
         return (
@@ -79,20 +76,11 @@ class Board extends React.Component {
     }
 }
 
-function drawBoard (element, cols, rows) {
-    console.log(element);
+function drawBoard (element, cols, rows, board) {
     ReactDOM.render(
-        <Board rows={rows} cols={cols} />,
+        <Board rows={rows} cols={cols} board={board} />,
         element
     );
-}
-
-function drawGame(board, element) {
-    for (let col = 0; col < board.length; col++) {
-        for (let row = 0; row < board[col].length; row++) {
-            element.find(`.column:eq(${col}) .cell:eq(${row})`).addClass(`player-${board[col][row]}`);
-        }
-    }
 }
 
 function highlightWinningCells(winning, element) {
@@ -136,10 +124,9 @@ function connect() {
         console.log(game);
         let board = document.getElementById('board');
         if (board) {
-            drawBoard(board, game.columns, game.rows);
+            drawBoard(board, game.columns, game.rows, game.board);
             $('#numToWin').text(game.toWin);
         }
-        drawGame(game.board, $('#board'));
         if (game.state === 'won') {
             $('#status').html(`${playerName(game.turn)} wins!`);
             highlightWinningCells(game.winning, $('#board'));
@@ -208,8 +195,7 @@ $(document).ready(function () {
                                             var board = $('<div></div>');
                                             el.appendTo($('#local-games'));
                                             board.appendTo(el);
-                                            drawBoard(board);
-                                            drawGame(data.game.board, board);
+                                            drawBoard(board, data.game.columns, data.game.rows, data.game.board);
                                         }
                                     });
                                 } else {
@@ -249,8 +235,7 @@ $(document).ready(function () {
                             var board = $('<div></div>');
                             el.appendTo($('#recent-results'));
                             board.appendTo(el);
-                            drawBoard(board[0], result.columns, result.rows);
-                            drawGame(result.board, board);
+                            drawBoard(board[0], result.columns, result.rows, result.board);
                             if (!result.draw) {
                                 highlightWinningCells(result.winning, board);
                             }
