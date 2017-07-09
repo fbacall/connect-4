@@ -92,8 +92,9 @@ class Board extends React.Component {
             board: props.board || (new Array(parseInt(props.cols)).fill([]))
         };
         socket.on('place-token',(data) => {
-            this.state.board[data.column].push(data.player.number);
-            this.setState({ board: this.state.board });
+            let board = this.state.board.slice();
+            board[data.column].push(data.player.number);
+            this.setState({ board: board });
         });
     }
 
