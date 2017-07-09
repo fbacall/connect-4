@@ -76,7 +76,6 @@ class Connect4 {
     };
 
     checkWin(column, row) {
-        console.log(column, row);
         const directions = [[0, 1], [1, -1], [1, 0], [1, 1]];
         const player = this.board[column][row];
         let victory = false;
