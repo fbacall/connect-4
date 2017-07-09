@@ -84,53 +84,61 @@ http.listen(port, function(){
     console.log('listening on *:' + port);
 });
 
-io.on('connection', function(socket){
-    var roomId = socket.handshake.query.id;
-    var name = Sanitizer.sanitize(socket.handshake.query.name).substr(0,30);
-    if (name.replace(/ /g,'') === '') {
-        name = 'anon';
-    }
-    console.log(name + ' connected');
-    var room = rooms[roomId];
-    var player = { name: name };
-    socket.player = player;
+io.on('connection', function(socket) {
+    console.log('New connection');
+    let room;
+    let name;
+    let game;
+    let player;
 
-    if (room) {
-        var game = room.game;
+    socket.on('join', function (data) {
+        let roomId = data.id;
+        let name = Sanitizer.sanitize(data.name).substr(0,30);
+        if (name.replace(/ /g,'') === '') {
+            name = 'anon';
+        }
+        console.log(name + ' joined room ' + roomId);
+        room = rooms[roomId];
+        player = { name: name };
+        socket.player = player;
 
-        if (!(game.player1 && game.player2)) {
-            game.addPlayer(player);
-            socket.emit('player-number', player.number);
+        if (room) {
+            game = room.game;
 
-            socket.on('place-token', function(column) {
-                if (game.turn === player) {
-                    game.placeToken(column);
-                    if (game.state === 'won') {
-                        room.status(game.winner, 'wins!');
-                        pushResult({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning, columns: game.columns, rows: game.rows  });
-                    } else if (game.state === 'draw') {
-                        pushResult({ draw: true, winner: game.player1, loser: game.player2, board: game.board, columns: game.columns, rows: game.rows });
+            if (!(game.player1 && game.player2)) {
+                game.addPlayer(player);
+                socket.emit('player-number', player.number);
+
+                socket.on('place-token', function (column) {
+                    if (game.turn === player) {
+                        game.placeToken(column);
+                        if (game.state === 'won') {
+                            room.status(game.winner, 'wins!');
+                            pushResult({ winner: game.winner, loser: game.loser, board: game.board, winning: game.winning, columns: game.columns, rows: game.rows  });
+                        } else if (game.state === 'draw') {
+                            pushResult({ draw: true, winner: game.player1, loser: game.player2, board: game.board, columns: game.columns, rows: game.rows });
+                        }
+                        room.sync();
                     }
-                    room.sync();
-                }
+                });
+            }
+
+            room.join(socket);
+            if (room.sweeper) {
+                console.log('Cancelling delete timer for room:', room.id);
+                clearTimeout(room.sweeper);
+                delete room.sweeper;
+            }
+            room.sync();
+
+            socket.on('chat-message', function (msg) {
+                room.chat(player, msg);
             });
+
+        } else {
+            socket.emit('game-closed');
         }
-
-        room.join(socket);
-        if (room.sweeper) {
-            console.log('Cancelling delete timer for room:', room.id);
-            clearTimeout(room.sweeper);
-            delete room.sweeper;
-        }
-        room.sync();
-
-        socket.on('chat-message', function (msg) {
-            room.chat(player, msg);
-        });
-
-    } else {
-        socket.emit('game-closed');
-    }
+    });
 
     socket.on('disconnect', function(){
         console.log((name || 'anonymous user') + ' disconnected');

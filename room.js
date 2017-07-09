@@ -32,6 +32,7 @@ Room.prototype.status = function (player, msg) {
 Room.prototype.sync = function () {
     var state = this.game.getState();
     state.connected = this.sockets.length;
+    console.log('syncing', state);
     this.broadcast('state', state);
 };
 
