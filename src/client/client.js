@@ -102,15 +102,18 @@ class Board extends React.Component {
     }
 
     render() {
-        let colList = [];
-
+        let columns = [];
         for (let i = 0; i < this.props.cols; i++) {
-            colList.push(<Column rows={this.props.rows} key={i} cells={this.state.board[i]} />);
+            let cells = [];
+            for (let j = 0; j < this.props.rows; j++) {
+                cells.push(<Cell key={i * 100 + j} player={this.state.board[i][j]}/>);
+            }
+            columns.push(<div key={i} className="column">{cells}</div>);
         }
 
         return (
             <div className="board">
-                {colList}
+                {columns}
             </div>
         );
     }
