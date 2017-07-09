@@ -25,7 +25,6 @@ socket.on('chat-status', function (data) {
 });
 
 socket.on('state', function (game) {
-    console.log(game);
     let board = document.getElementById('board');
     if (board) {
         drawBoard(board, game.columns, game.rows, game.board);
@@ -43,6 +42,10 @@ socket.on('state', function (game) {
     }
 
     $('#chat-status').text(game.connected + ' users connected');
+});
+
+socket.on('place-token', function (data) {
+    $('#status').html(`${playerName(data.turn)}'s turn`);
 });
 
 function getGeohash(callback) {
@@ -85,14 +88,13 @@ function Cell(props) {
 class Board extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //     board: props.board || (new Array(parseInt(props.cols)).fill([]))
-        // };
-        // socket.on('state',(game) => {
-        //     console.log('updating');
-        //     this.state.board = game.board;
-        // });
-        // console.log(this.state);
+        this.state = {
+            board: props.board || (new Array(parseInt(props.cols)).fill([]))
+        };
+        socket.on('place-token',(data) => {
+            this.state.board[data.column].push(data.player.number);
+            this.setState({ board: this.state.board });
+        });
     }
 
     handleClick(i) {
@@ -102,7 +104,7 @@ class Board extends React.Component {
         let colList = [];
 
         for (let i = 0; i < this.props.cols; i++) {
-            colList.push(<Column rows={this.props.rows} key={i} cells={this.props.board[i] || []} />);
+            colList.push(<Column rows={this.props.rows} key={i} cells={this.state.board[i]} />);
         }
 
         return (
