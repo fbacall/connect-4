@@ -182,3 +182,13 @@ a.local-game {
 #options {
     margin-top: 1em;
 }
+
+@keyframes example {
+    from { opacity: 0.6; }
+}
+
+.new {
+    animation-name: example;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}

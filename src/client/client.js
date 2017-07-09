@@ -63,22 +63,13 @@ function showSliderValue(slider) {
     slider.parent().find('span').text(slider.val());
 }
 
-function Column(props) {
-    let cells = [];
-    for (let i = 0; i < props.rows; i++) {
-        cells.push(<Cell key={i} player={props.cells[i]}/>);
-    }
-    return (
-        <div className="column">
-            {cells}
-        </div>
-    );
-}
-
 function Cell(props) {
     let classNames = 'cell';
     if (props.player) {
         classNames += (' player-' + props.player);
+    }
+    if (props.new) {
+        classNames += ' new';
     }
     return (
         <div className={classNames}></div>
@@ -89,12 +80,13 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            board: props.board || (new Array(parseInt(props.cols)).fill([]))
+            board: props.board || (new Array(parseInt(props.cols)).fill([])),
+            last: []
         };
         socket.on('place-token',(data) => {
             let board = this.state.board.slice();
-            board[data.column].push(data.player.number);
-            this.setState({ board: board });
+            let row = board[data.column].push(data.player.number) - 1;
+            this.setState({ board: board, last: [data.column, row] });
         });
     }
 
@@ -106,7 +98,8 @@ class Board extends React.Component {
         for (let i = 0; i < this.props.cols; i++) {
             let cells = [];
             for (let j = 0; j < this.props.rows; j++) {
-                cells.push(<Cell key={i * 100 + j} player={this.state.board[i][j]}/>);
+                let isNew = (this.state.last[0] === i && this.state.last[1] === j);
+                cells.push(<Cell new={isNew} key={i * 100 + j} player={this.state.board[i][j]}/>);
             }
             columns.push(<div key={i} className="column">{cells}</div>);
         }
@@ -237,7 +230,8 @@ $(document).ready(function () {
                         var el = $('<div class="small-board">' +
                             playerName(result.winner) + (result.draw ? ' drew against ' : ' beat ') +
                             playerName(result.loser) + '</div>');
-                        var board = $('<div></div>');
+                           console.log(isNew, this.state.last, i, j);
+             var board = $('<div></div>');
                         el.appendTo($('#recent-results'));
                         board.appendTo(el);
                         drawBoard(board[0], result.columns, result.rows, result.board);
