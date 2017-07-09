@@ -46,7 +46,7 @@ app.post('/game', function (req, res) {
     var rows = constrain(req.body.rows, 6, 4, 10);
     var toWin = constrain(req.body.toWin, 4, 3, 7);
 
-    rooms[id] = new Room(id, new Connect4(cols, rows, toWin));
+    rooms[id] = new Room(id, new Connect4(cols, rows, parseInt(toWin)));
     console.log('Created new room:', id,
         '( cols: ', cols, ', rows: ', rows, ' to win: ', toWin, ')');
 
