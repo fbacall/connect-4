@@ -37,16 +37,16 @@ app.use(BodyParser.urlencoded({ extended: true }));
 
 app.post('/game', function (req, res) {
     // Generate a unique ID
-    var id;
+    let id;
     do {
         id = Math.random().toString(36).substr(2, 9);
     } while (typeof rooms[id] !== 'undefined');
 
-    var cols = constrain(req.body.cols, 7, 4, 10);
-    var rows = constrain(req.body.rows, 6, 4, 10);
-    var toWin = constrain(req.body.toWin, 4, 3, 7);
+    let cols = constrain(req.body.cols, 7, 4, 10);
+    let rows = constrain(req.body.rows, 6, 4, 10);
+    let toWin = constrain(parseInt(req.body.toWin), 4, 3, 7);
 
-    rooms[id] = new Room(id, new Connect4(cols, rows, parseInt(toWin)));
+    rooms[id] = new Room(id, new Connect4(cols, rows, toWin));
     console.log('Created new room:', id,
         '( cols: ', cols, ', rows: ', rows, ' to win: ', toWin, ')');
 
@@ -69,11 +69,10 @@ app.get('/game/:id', function (req, res) {
 });
 
 app.get('/games/:geohash', function (req, res) {
-    var list = geohashMap.nearest(req.params.geohash, 10).map(function (room) {
+    res.send(
+        geohashMap.nearest(req.params.geohash, 10).map(function (room) {
         return { id: room.id, game: room.game };
-    });
-
-    res.send(list);
+    }));
 });
 
 app.get('/results', function (req, res) {
@@ -149,7 +148,7 @@ io.on('connection', function(socket) {
             room.leave(socket);
             game.removePlayer(player);
             room.sync();
-            if (room.sockets.length == 0) {
+            if (!room.sockets.length) {
                 sweepRoom(room, 10 * 60 * 1000);
             }
         }
