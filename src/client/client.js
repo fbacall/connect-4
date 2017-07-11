@@ -95,6 +95,12 @@ class Board extends React.Component {
 
     render() {
         let columns = [];
+        let overlayColumns = [];
+
+        const overlayStyle = {
+            backgroundSize: `100% calc(100%  /${this.props.rows})`
+        };
+
         for (let i = 0; i < this.props.cols; i++) {
             let cells = [];
             for (let j = 0; j < this.props.rows; j++) {
@@ -102,10 +108,13 @@ class Board extends React.Component {
                 cells.push(<Cell new={isNew} key={i * 100 + j} player={this.state.board[i][j]}/>);
             }
             columns.push(<div key={i} className="column">{cells}</div>);
+            overlayColumns.push(<div style={overlayStyle} key={i} className="overlay-column">{cells}</div>);
         }
+
 
         return (
             <div className="board">
+                <div className="overlay">{overlayColumns}</div>
                 {columns}
             </div>
         );
@@ -155,7 +164,7 @@ $(document).ready(function () {
             }
         });
 
-        $('#board').on('click', '.column', function () {
+        $('#board').on('click', '.overlay-column', function () {
             socket.emit('place-token', $(this).index());
         });
 
@@ -230,8 +239,7 @@ $(document).ready(function () {
                         var el = $('<div class="small-board">' +
                             playerName(result.winner) + (result.draw ? ' drew against ' : ' beat ') +
                             playerName(result.loser) + '</div>');
-                           console.log(isNew, this.state.last, i, j);
-             var board = $('<div></div>');
+                        var board = $('<div></div>');
                         el.appendTo($('#recent-results'));
                         board.appendTo(el);
                         drawBoard(board[0], result.columns, result.rows, result.board);
