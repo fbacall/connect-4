@@ -137,8 +137,8 @@ function scrollChat() {
     e.scrollTop(e[0].scrollHeight);
 }
 
-function connect(name, id) {
-    socket.emit('join', { id: id, name: name });
+function connect(id) {
+    socket.emit('join', { id: id, name: $('#name-input').val() });
     $('#name-modal').modal('hide');
 }
 
@@ -146,13 +146,12 @@ $(document).ready(function () {
     let match = window.location.href.match(/\/game\/([a-z0-9]+)/);
     if (match) {
         $('#name-modal').modal('show');
-        let name = $('#name-input').val();
         let id = match[1];
 
-        $('#connect').click(function () { connect(name, id) });
+        $('#connect').click(function () { connect(id) });
         $('#name-input').keyup(function (e) {
             if (e.keyCode == 13) {
-                connect(name, id);
+                connect(id);
             }
         });
 
