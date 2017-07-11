@@ -40,7 +40,7 @@ a.local-game {
 }
 
 .small-board .board .overlay-column:hover {
-    background-color: inherit;
+    opacity: 1;
 }
 
 .game-container {
@@ -121,11 +121,11 @@ a.local-game {
 }
 
 .cell.player-1.winning {
-    background-color: #ff8b7e;
+    background-image: url('../images/token-1-win.png');
 }
 
 .cell.player-2.winning {
-    background-color: #faff96;
+    background-image: url('../images/token-2-win.png');
 }
 
 #status {
@@ -203,7 +203,6 @@ a.local-game {
 }
 
 .new {
-    position: absolute;
     animation-name: example;
     animation-duration: 1s;
 }
