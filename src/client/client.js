@@ -25,7 +25,6 @@ socket.on('chat-status', function (data) {
 });
 
 socket.on('state', function (game) {
-    console.log(game);
     let board = document.getElementById('board');
     if (board) {
         drawBoard(board, game.columns, game.rows, game.board);
@@ -45,6 +44,10 @@ socket.on('state', function (game) {
     $('#chat-status').text(game.connected + ' users connected');
 });
 
+socket.on('place-token', function (data) {
+    $('#status').html(`${playerName(data.turn)}'s turn`);
+});
+
 function getGeohash(callback) {
     if (geohash) {
         callback(geohash);
@@ -60,22 +63,13 @@ function showSliderValue(slider) {
     slider.parent().find('span').text(slider.val());
 }
 
-function Column(props) {
-    let cells = [];
-    for (let i = 0; i < props.rows; i++) {
-        cells.push(<Cell key={i} player={props.cells[i]}/>);
-    }
-    return (
-        <div className="column">
-            {cells}
-        </div>
-    );
-}
-
 function Cell(props) {
     let classNames = 'cell';
     if (props.player) {
         classNames += (' player-' + props.player);
+    }
+    if (props.new) {
+        classNames += ' new';
     }
     return (
         <div className={classNames}></div>
@@ -85,29 +79,43 @@ function Cell(props) {
 class Board extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //     board: props.board || (new Array(parseInt(props.cols)).fill([]))
-        // };
-        // socket.on('state',(game) => {
-        //     console.log('updating');
-        //     this.state.board = game.board;
-        // });
-        // console.log(this.state);
+        this.state = {
+            board: props.board || (new Array(parseInt(props.cols)).fill([])),
+            last: []
+        };
+        socket.on('place-token',(data) => {
+            let board = this.state.board.slice();
+            let row = board[data.column].push(data.player.number) - 1;
+            this.setState({ board: board, last: [data.column, row] });
+        });
     }
 
     handleClick(i) {
     }
 
     render() {
-        let colList = [];
+        let columns = [];
+        let overlayColumns = [];
+
+        const overlayStyle = {
+            backgroundSize: `100% calc(100%  /${this.props.rows})`
+        };
 
         for (let i = 0; i < this.props.cols; i++) {
-            colList.push(<Column rows={this.props.rows} key={i} cells={this.props.board[i] || []} />);
+            let cells = [];
+            for (let j = 0; j < this.props.rows; j++) {
+                let isNew = (this.state.last[0] === i && this.state.last[1] === j);
+                cells.push(<Cell new={isNew} key={i * 100 + j} player={this.state.board[i][j]}/>);
+            }
+            columns.push(<div key={i} className="column">{cells}</div>);
+            overlayColumns.push(<div style={overlayStyle} key={i} className="overlay-column">{cells}</div>);
         }
+
 
         return (
             <div className="board">
-                {colList}
+                <div className="overlay">{overlayColumns}</div>
+                {columns}
             </div>
         );
     }
@@ -155,7 +163,7 @@ $(document).ready(function () {
             }
         });
 
-        $('#board').on('click', '.column', function () {
+        $('#board').on('click', '.overlay-column', function () {
             socket.emit('place-token', $(this).index());
         });
 

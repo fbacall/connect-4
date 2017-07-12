@@ -39,8 +39,8 @@ a.local-game {
     border-width: 2px 0;
 }
 
-.small-board .board .column:hover {
-    background-color: inherit;
+.small-board .board .overlay-column:hover {
+    opacity: 1;
 }
 
 .game-container {
@@ -73,44 +73,59 @@ a.local-game {
     max-width: 1200px;
     background-color: #a3abb6;
     border-radius: 10px;
-    border: 5px solid #202b41;
+    border: 3px solid #202b41;
+    position: relative;
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+}
+
+.overlay-column {
+    background-image: url('../images/cell.png');
+    flex-grow: 1;
+    border-color: #202b41;
+    border-style: solid;
+    border-width: 5px 0;
+}
+
+.overlay-column:hover {
+    opacity: 0.7;
 }
 
 .column {
     display: flex;
     flex-direction: column-reverse;
-    border-color: #202b41;
-    border-style: solid;
-    border-width: 5px 0;
     flex-grow: 1;
-}
-
-.column:hover {
-    background-color: #fff;
+    padding: 5px 0;
 }
 
 .cell {
     flex-grow: 1;
-    background-image: url('../images/cell.png');
-    background-position: center center;
-    background-size: 100% 100%;
     text-align: center;
+    background-size: 100% auto;
+    background-position: center center;
 }
 
 .cell.player-1 {
-    background-color: #e81216;
+    background-image: url('../images/token-1.png');
 }
 
 .cell.player-2 {
-    background-color: #ffcf2f;
+    background-image: url('../images/token-2.png');
 }
 
 .cell.player-1.winning {
-    background-color: #ff8b7e;
+    background-image: url('../images/token-1-win.png');
 }
 
 .cell.player-2.winning {
-    background-color: #faff96;
+    background-image: url('../images/token-2-win.png');
 }
 
 #status {
@@ -181,4 +196,13 @@ a.local-game {
 
 #options {
     margin-top: 1em;
+}
+
+@keyframes example {
+    from { margin-bottom: 300px; }
+}
+
+.new {
+    animation-name: example;
+    animation-duration: 1s;
 }
