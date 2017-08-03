@@ -206,11 +206,11 @@ a.local-game {
     margin-top: 1em;
 }
 
-@keyframes example {
-    from { top: 500px; }
+@keyframes drop {
+    from { bottom: 500px; }
 }
 
 .new.token {
-    animation-name: example;
+    animation-name: drop;
     animation-duration: 1s;
 }
