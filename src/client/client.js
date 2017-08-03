@@ -64,7 +64,8 @@ function showSliderValue(slider) {
 }
 
 function Cell(props) {
-    let classNames = 'cell';
+    let classNames = 'token';
+
     if (props.player) {
         classNames += (' player-' + props.player);
     }
@@ -72,7 +73,7 @@ function Cell(props) {
         classNames += ' new';
     }
     return (
-        <div className={classNames}></div>
+        <div className="cell"><div className={classNames}></div></div>
     );
 }
 
