@@ -108,7 +108,7 @@ class Board extends React.Component {
                 cells.push(<Cell new={isNew} key={i * 100 + j} player={this.state.board[i][j]}/>);
             }
             columns.push(<div key={i} className="column">{cells}</div>);
-            overlayColumns.push(<div style={overlayStyle} key={i} className="overlay-column">{cells}</div>);
+            overlayColumns.push(<div style={overlayStyle} key={i} className="overlay-column"></div>);
         }
 
 
