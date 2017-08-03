@@ -73,7 +73,7 @@ function Cell(props) {
         classNames += ' new';
     }
     return (
-        <div className="cell"><div className={classNames}></div></div>
+        <div className="cell"><div className={classNames}></div><div className="overlay"></div></div>
     );
 }
 
@@ -96,11 +96,6 @@ class Board extends React.Component {
 
     render() {
         let columns = [];
-        let overlayColumns = [];
-
-        const overlayStyle = {
-            backgroundSize: `100% calc(100%  /${this.props.rows})`
-        };
 
         for (let i = 0; i < this.props.cols; i++) {
             let cells = [];
@@ -109,15 +104,10 @@ class Board extends React.Component {
                 cells.push(<Cell new={isNew} key={i * 100 + j} player={this.state.board[i][j]}/>);
             }
             columns.push(<div key={i} className="column">{cells}</div>);
-            overlayColumns.push(<div style={overlayStyle} key={i} className="overlay-column"></div>);
         }
 
-
         return (
-            <div className="board">
-                <div className="overlay">{overlayColumns}</div>
-                {columns}
-            </div>
+            <div className="board">{columns}</div>
         );
     }
 }
@@ -133,7 +123,7 @@ function drawBoard (element, cols, rows, board, winning) {
 
 function highlightWinningCells(winning, element) {
     winning.forEach((c) => {
-        element.find(`.column:eq(${c[0]}) .cell:eq(${c[1]})`).addClass('winning');
+        element.find(`.column:eq(${c[0]}) .token:eq(${c[1]})`).addClass('winning');
     });
 }
 
@@ -164,7 +154,7 @@ $(document).ready(function () {
             }
         });
 
-        $('#board').on('click', '.overlay-column', function () {
+        $('#board').on('click', '.column', function () {
             socket.emit('place-token', $(this).index());
         });
 
