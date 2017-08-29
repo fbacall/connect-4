@@ -1,9 +1,10 @@
 const sanitizer = require('sanitizer');
 
 class Room {
-    constructor (id, game) {
+    constructor (id, game, options) {
         this.id = id;
         this.game = game;
+        this.options = options;
         this.sockets = [];
     }
 

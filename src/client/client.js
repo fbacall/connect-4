@@ -48,6 +48,11 @@ socket.on('place-token', function (data) {
     $('#status').html(`${playerName(data.turn)}'s turn`);
 });
 
+socket.on('room', function (data) {
+    $('body').addClass('bg-' + data.background);
+});
+
+
 function getGeohash(callback) {
     if (geohash) {
         callback(geohash);

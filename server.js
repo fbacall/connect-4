@@ -14,6 +14,7 @@ const port = parseInt(process.argv[2] || '3000');
 const rooms = { debug: new Room('debug', new Connect4(7, 6)),
     debug2: new Room('debug2', new Connect4(9, 9, 5))};
 const geohashMap = new GeohashMap();
+const backgrounds = ['beach', 'field', 'flowers', 'sunset'];
 
 // Results
 let results = [];
@@ -45,8 +46,13 @@ app.post('/game', function (req, res) {
     let cols = constrain(req.body.cols, 7, 4, 10);
     let rows = constrain(req.body.rows, 6, 4, 10);
     let toWin = constrain(parseInt(req.body.toWin), 4, 3, 7);
+    let background = req.body.bg;
 
-    rooms[id] = new Room(id, new Connect4(cols, rows, toWin));
+    if (!background) {
+        background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+    }
+
+    rooms[id] = new Room(id, new Connect4(cols, rows, toWin), { background: background });
     console.log('Created new room:', id,
         '( cols: ', cols, ', rows: ', rows, ' to win: ', toWin, ')');
 
@@ -131,6 +137,7 @@ io.on('connection', function(socket) {
                 clearTimeout(room.sweeper);
                 delete room.sweeper;
             }
+            socket.emit('room', room.options);
             room.sync();
 
             socket.on('chat-message', function (msg) {
