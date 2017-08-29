@@ -77,6 +77,18 @@ function Cell(props) {
     );
 }
 
+function Column(props) {
+    let cells = [];
+    for (let i = 0; i < props.rows; i++) {
+        let isNew = (props.last === i);
+        cells.push(<Cell new={isNew} key={i * 100 + i} player={props.column[i]}/>);
+    }
+
+    return (
+        <div className="column" onClick={() => props.onClick()}>{cells}</div>
+    );
+}
+
 class Board extends React.Component {
     constructor(props) {
         super(props);
@@ -91,19 +103,15 @@ class Board extends React.Component {
         });
     }
 
-    handleClick(i) {
+    handleClick(col) {
+        socket.emit('place-token', col);
     }
 
     render() {
         let columns = [];
 
         for (let i = 0; i < this.props.cols; i++) {
-            let cells = [];
-            for (let j = 0; j < this.props.rows; j++) {
-                let isNew = (this.state.last[0] === i && this.state.last[1] === j);
-                cells.push(<Cell new={isNew} key={i * 100 + j} player={this.state.board[i][j]}/>);
-            }
-            columns.push(<div key={i} className="column">{cells}</div>);
+            columns.push(<Column key={i} last={this.state.last[0] === i ? this.state.last[1] : null} column={this.state.board[i]} rows={this.props.rows} onClick={() => this.handleClick(i)}/>);
         }
 
         return (
@@ -152,10 +160,6 @@ $(document).ready(function () {
             if (e.keyCode == 13) {
                 connect(id);
             }
-        });
-
-        $('#board').on('click', '.column', function () {
-            socket.emit('place-token', $(this).index());
         });
 
         $('#chat-input').keyup(function (e) {
