@@ -20,7 +20,8 @@
     "url": "https://github.com/fbacall/connect-4.git"
   },
   "scripts": {
-    "build": "webpack --progress --colors --watch"
+    "build": "webpack --progress --colors",
+    "start": "npm run build && node server.js"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
