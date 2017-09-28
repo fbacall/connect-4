@@ -23,6 +23,9 @@ body.bg-field { background-image: url('../images/bg/field.jpeg'); }
 
 #recent-results, #local-games {
     font-size: larger;
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
 }
 
 a.local-game {
@@ -30,7 +33,7 @@ a.local-game {
 }
 
 .small-board {
-    float: left;
+    flex-grow: 1;
     margin: 5px;
     width: 215px;
 }
