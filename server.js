@@ -82,7 +82,7 @@ app.get('/games/:geohash', function (req, res) {
 });
 
 app.get('/results', function (req, res) {
-    res.send(results.slice(-10));
+    res.send(results.slice(-10).reverse());
 });
 
 http.listen(port, function(){
